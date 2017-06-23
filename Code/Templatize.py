@@ -3,37 +3,7 @@ from ClusterManager import ClusterManager
 from ArtifactManager import ArtifactManager
 from Config import Config
 
-"""
-mds_path = '/Users/cghai/Documents/Code/BaselineTemplating/ActiveMDS'
-objects = ['Opportunity', 'Lead']
-Opportunity/oracle/apps/custom/model/mdssys/cust/Site/SITE/ResourceRegistry.rpx.xml
-Opportunity/oracle/apps/sales/opptyMgmt/opportunities/opportunityService/mdssys/cust/Site/SITE/Opportunity.xsd.xml
-Opportunity/xliffBundles/override/oracle/apps/sales/opptyMgmt/opportunities/resource/OpptyMgmtOpportunitiesAttrBundle.xlf
-Opportunity/xliffBundles/override/oracle/apps/sales/opptyMgmt/opportunities/resource/mdssys/cust/Site/SITE/OpptyMgmtOpportunitiesAttrBundle.xlf.xml
-Opportunity/xliffBundles/override/oracle/adf/businesseditor/model/util/mdssys/cust/Site/SITE/BaseRuntimeResourceBundle.xlf.xml
-Opportunity/xliffBundles/override/oracle/adf/businesseditor/model/util/BaseRuntimeResourceBundle.xlf
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/model/entity/mdssys/cust/Site/SITE/OpportunityEO.xml.xml
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/model/entity/OpportunityEO.xml
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/opportunityService/view/OpportunityVO.xml
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/opportunityService/view/mdssys/cust/Site/SITE/OpportunityVOOperations.xml.xml
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/opportunityService/view/mdssys/cust/Site/SITE/OpportunityVO.xml.xml
-Opportunity/persdef/oracle/apps/sales/opptyMgmt/opportunities/opportunityService/view/OpportunityVOOperations.xml
 
-
-
-Lead/oracle/apps/custom/model/mdssys/cust/Site/SITE/ResourceRegistry.rpx.xml
-Lead/oracle/apps/marketing/leadMgmt/leads/leadService/mdssys/cust/Site/SITE/MklLead.xsd.xml
-Lead/xliffBundles/override/oracle/apps/marketing/leadMgmt/leads/resource/MklLeadsAttrBundle.xlf
-Lead/xliffBundles/override/oracle/apps/marketing/leadMgmt/leads/resource/mdssys/cust/Site/SITE/MklLeadsAttrBundle.xlf.xml
-Lead/xliffBundles/override/oracle/adf/businesseditor/model/util/mdssys/cust/Site/SITE/BaseRuntimeResourceBundle.xlf.xml
-Lead/xliffBundles/override/oracle/adf/businesseditor/model/util/BaseRuntimeResourceBundle.xlf
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/leadService/view/mdssys/cust/Site/SITE/MklLeadVO.xml.xml
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/leadService/view/mdssys/cust/Site/SITE/MklLeadVOOperations.xml.xml
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/leadService/view/MklLeadVO.xml
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/leadService/view/MklLeadVOOperations.xml
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/model/entity/mdssys/cust/Site/SITE/MklLeadEO.xml.xml
-Lead/persdef/oracle/apps/marketing/leadMgmt/leads/model/entity/MklLeadEO.xml
-"""
 class Templatize:
 
 
