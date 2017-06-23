@@ -32,6 +32,62 @@ class XMLElement:
     def getChildren(self):
         return self.children
 
+    def __lt__(self, other):
+        if isinstance(other, XMLElement):
+
+            if other.tag > self.tag:
+                return True
+            if self.tag > other.tag:
+                return False
+
+
+            self_attr = self.getAttr()
+            other_attr = other.getAttr()
+            if self_attr is None:
+                return True
+            if other_attr is None:
+                return False
+            if len(other_attr) > len(self_attr):
+                return True
+            if len(self_attr) > len(other_attr):
+                return False
+
+
+            self_children = self.getChildren()
+            other_children = other.getChildren()
+            if self_children is None:
+                return True
+            if other_children is None:
+                return False
+            if len(other_children) > len(self_children):
+                return True
+            if len(self_children) > len(other_children):
+                return False
+
+
+            for s,o in zip(self_attr, other_attr):
+                if s.getKey() < o.getKey():
+                    return True
+                if s.getKey() > o.getKey():
+                    return False
+
+                if s.getValue() < o.getValue():
+                    return True
+                if s.getValue() > o.getValue():
+                    return False
+
+
+            for s,o in zip(self_children, other_children):
+                if s < o:
+                    return True
+                if s > o:
+                    return False
+
+            return False
+
+        return NotImplemented
+
+
 
 
 class Pair:
@@ -106,7 +162,7 @@ class Artifact:
         for child in children:
             xml_children.append(self.parse(child))
 
-        xml_children = sorted(xml_children, key = lambda x: x.tag)
+        xml_children = sorted(xml_children)
         xml_elem.addChildren(xml_children)
 
         return xml_elem
