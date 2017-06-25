@@ -5,7 +5,7 @@ class ArtifactManager:
     path_to_artifact = {}
 
     @staticmethod
-    def getArtifact(path):
+    def get_artifact(path):
         if path not in ArtifactManager.path_to_artifact:
             ArtifactManager.path_to_artifact[path] = Artifact(path)
 

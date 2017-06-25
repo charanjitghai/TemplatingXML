@@ -6,53 +6,43 @@ from Config import Config
 
 class Templatize:
 
-
     def __init__(self, debug, mds_path = None, objects = None, patterns = None):
-
         self.debug = True
-
-        self.patterns = patterns
-        if patterns is None:
+        if debug:
+            self.patterns = patterns
+            self.mds_path = mds_path
+            self.objects = objects
+        else:
             self.patterns = Config.patterns
+            self.mds_path = Config.mds_path
+            self.objects = Config.objects
 
-        self.mds_path = mds_path
-        self.objects = objects if debug else os.listdir(mds_path)
         self.obj_to_files = {}
         self.preprocess()
 
     def preprocess(self):
-
         for obj in self.objects:
             self.obj_to_files[obj] = []
             for root, dirs, files in os.walk(os.path.join(self.mds_path, obj)):
                 for afile in files:
-                    file_name = os.path.join(root, afile).replace(self.mds_path, "")[1:]
-                    self.obj_to_files[obj].append(file_name)
+                    file_path = os.path.join(root, afile)
+                    self.obj_to_files[obj].append(file_path)
                     for pattern in self.patterns:
-                        if file_name.endswith(pattern):
-                            cluster = ClusterManager.getCluster(pattern)
-                            cluster.add_artifact(ArtifactManager.getArtifact(file_name))
+                        if file_path.endswith(pattern):
+                            cluster = ClusterManager.get_cluster(pattern)
+                            artifact = ArtifactManager.get_artifact(file_path)
+                            cluster.add_artifact(cluster)
+                            artifact.set_cluster(cluster)
                             break
 
-
-
-
-
-
-templatize = Templatize(debug=True, objects = Config.objects , mds_path = Config.mds_path)
+templatize = Templatize(debug=True, objects=['Lead', 'Opportunity'], mds_path=Config.mds_path, patterns=['VO.xml.xml'])
 
 for pattern in templatize.patterns:
-    cluster = ClusterManager.getCluster(pattern)
+    cluster = ClusterManager.get_cluster(pattern)
     for artifact in cluster.get_artifacts():
-        artifact.sort()
+        artifact.print_xml()
         print 'Done..'
-        #print artifact
 
-"""
-debug = True
-preprocess(obj_to_files, pattern_to_cluster)
-for pattern in patterns:
-    cluster = pattern_to_cluster[pattern]
-    print pattern, len(cluster.get_files())
-# print "\t", pattern_to_cluster[pattern].getFiles()
-"""
+for pattern in templatize.patterns:
+    cluster = ClusterManager.get_cluster(pattern)
+    cluster.get_template().print_xml()
