@@ -18,7 +18,9 @@ class Templatize:
             self.objects = Config.objects
 
         self.obj_to_files = {}
+        self.cluster_to_template = {}
         self.preprocess()
+        self.process()
 
     def preprocess(self):
         for obj in self.objects:
@@ -31,18 +33,14 @@ class Templatize:
                         if file_path.endswith(pattern):
                             cluster = ClusterManager.get_cluster(pattern)
                             artifact = ArtifactManager.get_artifact(file_path)
-                            cluster.add_artifact(cluster)
+                            cluster.add_artifact(artifact)
                             artifact.set_cluster(cluster)
                             break
 
-templatize = Templatize(debug=True, objects=['Lead', 'Opportunity'], mds_path=Config.mds_path, patterns=['VO.xml.xml'])
+    def process(self):
+        for pattern in self.patterns:
+            cluster = ClusterManager.get_cluster(pattern)
+            cluster.get_template()
 
-for pattern in templatize.patterns:
-    cluster = ClusterManager.get_cluster(pattern)
-    for artifact in cluster.get_artifacts():
-        artifact.print_xml()
-        print 'Done..'
 
-for pattern in templatize.patterns:
-    cluster = ClusterManager.get_cluster(pattern)
-    cluster.get_template().print_xml()
+
