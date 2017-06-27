@@ -21,6 +21,25 @@ class Artifact:
     def get_tokens(self):
         return self.tokens
 
+    """
+        This method returns a dictionary where each key,value pair in the 
+        dictionary siginifies that the token "key" is a duplicate of token "value"
+        and hence all occurences of token "key" should be replaced by token "value" in
+        the template xml
+    """
+    def get_duplicate_tokens(self):
+        tokens = self.get_tokens()
+        token_names = sorted(tokens.keys())
+        value_to_token_name = {}
+        ans = {}
+        for token_name in token_names:
+            token_value = tokens[token_name]
+            if token_value in value_to_token_name:
+                ans[token_name] = value_to_token_name[token_value]
+            else:
+                value_to_token_name[token_value] = token_name
+        return ans
+
     def get_fp(self):
         if self.fp is None:
             self.fp = open(self.path, 'r')

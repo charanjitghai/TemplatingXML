@@ -36,6 +36,37 @@ class Cluster:
             )
         return self.template
 
+    """
+        This method returns true if all the artifacts in
+        current cluster consent that the data returned by
+        invoking "method" on them is same
+    """
+
+    def consensus(self, method):
+        artifacts = self.get_artifacts()
+        baseline_data = method(artifacts[0])
+        for artifact in artifacts[1:]:
+            if baseline_data != method(artifact):
+                return False
+        return True
+    """
+        This method processes the calculated template for current cluster
+        to remove the duplicate tokens. It expects an integer verify_in_n
+        to check in "verify_in_n" number of artifacts before marking a token
+        as duplicate i.e. if first "verify_in_n" objects all agree that a
+        token i has same value as token j where i > j, then token i would be
+        marked as duplicate of token j, and all occurences of token i in the
+        template would be replaced by token j.
+        The method also allows to specify name of the artifacts on which the same
+        algorithm would be applied.
+        If both verify_in_n and verify_in_objects are specified, verify_in_objects
+        would take precedence
+    """
+
+    def remove_duplicate_tokens_from_baseline(self, verify_in_n, verify_in_objects):
+        artifacts = [artifact for artifact in self.get_artifacts() if len([object for object in verify_in_objects if object in artifact]) == 1]
+
+
     def process(self, xmls, artifacts):
         tag = xmls[0].get_tag()
         ans = XMLElement(tag)
