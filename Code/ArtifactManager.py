@@ -1,12 +1,16 @@
 import xml.etree.ElementTree as ET
-
+import copy
+from Util import Util
 
 class Artifact:
     def __init__(self, path):
         self.path = path
         self.fp = None
-        self.xml = self.sort(ET.parse(self.path).getroot())
+        self.et = ET.parse(self.path)
+        self.xml = self.sort(self.et.getroot())
         self.tokens = {}
+        self.unique_tokens = None
+        self.value_to_token = None
         self.cluster = None
 
     def get_path(self):
@@ -73,6 +77,30 @@ class Artifact:
         xml_elem.add_children(xml_children)
 
         return xml_elem
+
+    def get_cluster(self):
+        return self.cluster
+
+    def get_template(self):
+        et = self.et
+        dup_tokens = self.get_cluster().get_duplicate_tokens()
+        unique_tokens = {}
+        all_tokens = self.get_tokens()
+
+        for token in all_tokens:
+            if token not in dup_tokens:
+                unique_tokens[token] = all_tokens[token]
+        self.unique_tokens = unique_tokens
+
+        value_to_token = {}
+        for token in unique_tokens:
+            value_to_token[unique_tokens[token]] = token
+        self.value_to_token = value_to_token
+
+        et = copy.deepcopy(self.et)
+        Util.tokenize(et.getroot(), value_to_token)
+        return et
+
 
 
 class XMLElement:

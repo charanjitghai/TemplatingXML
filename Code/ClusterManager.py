@@ -1,5 +1,6 @@
 from ArtifactManager import XMLElement, Pair
 from Config import Config
+from Util import Util
 
 class Cluster:
     def __init__(self, name):
@@ -7,6 +8,7 @@ class Cluster:
         self.artifacts = []
         self.template = None
         self.n_token = 0
+        self.duplicate_tokens = None
 
     def get_artifact_from_object(self, object):
         for artifact in self.artifacts:
@@ -49,9 +51,10 @@ class Cluster:
             if baseline_data != method(artifact):
                 return False
         return True
+
     """
-        This method processes the calculated template for current cluster
-        to remove the duplicate tokens. It expects an integer verify_in_n
+        This method processes the duplicate tokens of the artifacts in current cluster
+        and gets consolidated dictionary of duplicate tokens. It expects an integer verify_in_n
         to check in "verify_in_n" number of artifacts before marking a token
         as duplicate i.e. if first "verify_in_n" objects all agree that a
         token i has same value as token j where i > j, then token i would be
@@ -63,10 +66,35 @@ class Cluster:
         would take precedence
     """
 
-    def remove_duplicate_tokens_from_baseline(self, verify_in_n, verify_in_objects):
-        artifacts = [artifact for artifact in self.get_artifacts() if len([object for object in verify_in_objects if object in artifact]) == 1]
+    def get_duplicate_tokens(self, verify_in_objects=None, verify_in_n=2):
+        if self.duplicate_tokens is None:
+            artifacts = [artifact for artifact in self.get_artifacts() if len([object for object in (verify_in_objects or []) if object in artifact]) == 1]
+            if len(artifacts) < 2:
+                artifacts = self.get_artifacts()[:verify_in_n]
 
+            dup_tokens = artifacts[0].get_duplicate_tokens()
+            for artifact in artifacts[1:]:
+                c_dup_tokens = artifact.get_duplicate_tokens()
+                if c_dup_tokens != dup_tokens:
+                    prev_dup_tokens = dup_tokens
+                    dup_tokens = {}
+                    for k in c_dup_tokens.keys() + prev_dup_tokens.keys():
+                        if k in c_dup_tokens and k in prev_dup_tokens and c_dup_tokens[k] == prev_dup_tokens[k]:
+                            dup_tokens[k] = prev_dup_tokens[k]
 
+            self.duplicate_tokens = dup_tokens
+        return self.duplicate_tokens
+
+    def remove_duplicates_from_template(self, verify_in_objects=None, verify_in_n=2):
+        Util.substitute(self.get_template(), self.get_duplicate_tokens(verify_in_objects, verify_in_n))
+
+    """
+    def remove_duplicates_from_elem(self, duplicate_tokens):
+        attrs = self.get_attr()
+        for attr in attrs:
+            if attr.get_value() in duplicate_tokens:
+                attr.set_value(duplicate_tokens[])
+    """
     def process(self, xmls, artifacts):
         tag = xmls[0].get_tag()
         ans = XMLElement(tag)
