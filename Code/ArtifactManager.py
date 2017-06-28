@@ -81,6 +81,10 @@ class Artifact:
     def get_cluster(self):
         return self.cluster
 
+    """
+        Returns the template by substituting the token values
+        by token names.
+    """
     def get_template(self):
         et = self.et
         dup_tokens = self.get_cluster().get_duplicate_tokens()
@@ -101,6 +105,13 @@ class Artifact:
         Util.tokenize(et.getroot(), value_to_token)
         return et
 
+    def get_serialized_template(self):
+        return ET.tostring(self.get_template().getroot())
+
+    def __eq__(self, other):
+        if isinstance(other, Artifact):
+            return self.get_path() == other.get_path()
+        return NotImplemented
 
 
 class XMLElement:

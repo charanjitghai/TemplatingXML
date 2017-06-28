@@ -25,7 +25,8 @@ class Cluster:
         return hash(self.name)
 
     def add_artifact(self, file):
-        self.artifacts.append(file)
+        if file not in self.artifacts:
+            self.artifacts.append(file)
 
     def get_artifacts(self):
         return self.artifacts

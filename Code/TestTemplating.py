@@ -10,9 +10,6 @@ import xml.etree.ElementTree as ET
 
 class TestTemplating(unittest.TestCase):
 
-    def setUp(self):
-        Templatize(debug=True, objects=['Lead', 'Opportunity'], mds_path=Config.mds_path, patterns=['VO.xml.xml'])
-
     def test_basic_templating(self):
         cluster = ClusterManager.get_cluster('VO.xml.xml')
         oppty_artifact = cluster.get_artifact_from_object('Opportunity')
@@ -46,5 +43,10 @@ class TestTemplating(unittest.TestCase):
         lead_template = lead_artifact.get_template()
         self.assertEqual(ET.tostring(opty_template.getroot()), ET.tostring(lead_template.getroot()))
 
+    def test_tokenization_generic(self):
+        cluster = ClusterManager.get_cluster('VO.xml.xml')
+        self.assertTrue(cluster.consensus(Artifact.get_serialized_template))
+
+Templatize(debug=True, objects=['Lead', 'Opportunity', 'Note', 'Claim'], mds_path=Config.mds_path, patterns=['VO.xml.xml'])
 suite = unittest.TestLoader().loadTestsFromTestCase(TestTemplating)
 unittest.TextTestRunner(verbosity=2).run(suite)
