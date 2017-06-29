@@ -10,6 +10,9 @@ class Cluster:
         self.n_token = 0
         self.duplicate_tokens = None
 
+    def get_name(self):
+        return self.name
+
     def get_artifact_from_object(self, object):
         for artifact in self.artifacts:
             if object in artifact.get_path():
@@ -45,11 +48,11 @@ class Cluster:
         invoking "method" on them is same
     """
 
-    def consensus(self, method):
+    def consensus(self, method, comparator):
         artifacts = self.get_artifacts()
         baseline_data = method(artifacts[0])
         for artifact in artifacts[1:]:
-            if baseline_data != method(artifact):
+            if not comparator(baseline_data, method(artifact)):
                 return False
         return True
 

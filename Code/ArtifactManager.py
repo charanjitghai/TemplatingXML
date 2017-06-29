@@ -12,6 +12,7 @@ class Artifact:
         self.unique_tokens = None
         self.value_to_token = None
         self.cluster = None
+        self.template = None
 
     def get_path(self):
         return self.path
@@ -86,6 +87,8 @@ class Artifact:
         by token names.
     """
     def get_template(self):
+        if self.template is not None:
+            return self.template
         et = self.et
         dup_tokens = self.get_cluster().get_duplicate_tokens()
         unique_tokens = {}
@@ -103,7 +106,11 @@ class Artifact:
 
         et = copy.deepcopy(self.et)
         Util.tokenize(et.getroot(), value_to_token)
+        self.template = et
         return et
+
+    def get_template_root(self):
+        return self.get_template().getroot()
 
     def get_serialized_template(self):
         return ET.tostring(self.get_template().getroot())

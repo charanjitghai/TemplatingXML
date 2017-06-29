@@ -22,6 +22,9 @@ class Templatize:
         self.preprocess()
         self.process()
 
+    def get_patterns(self):
+        return self.patterns
+
     def preprocess(self):
         for obj in self.objects:
             self.obj_to_files[obj] = []
@@ -40,7 +43,11 @@ class Templatize:
     def process(self):
         for pattern in self.patterns:
             cluster = ClusterManager.get_cluster(pattern)
+
+            print "Processing Cluster " , cluster.get_name()
             cluster.get_template()
+            print "Done Cluster " , cluster.get_name()
+
 
 
 
