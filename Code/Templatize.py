@@ -22,6 +22,9 @@ class Templatize:
         self.preprocess()
         self.process()
 
+    def get_objects(self):
+        return self.objects
+
     def get_patterns(self):
         return self.patterns
 
@@ -38,6 +41,7 @@ class Templatize:
                             artifact = ArtifactManager.get_artifact(file_path)
                             cluster.add_artifact(artifact)
                             artifact.set_cluster(cluster)
+                            artifact.set_obj(obj)
                             break
 
     def process(self):

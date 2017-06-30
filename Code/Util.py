@@ -26,6 +26,9 @@ class Util:
         for child in children:
             Util.tokenize(child, value_to_token)
 
+    @staticmethod
+    def token_key_comparator(token_map1, token_map2):
+        return token_map1.keys() == token_map2.keys()
 
     @staticmethod
     def token_comparator(token_map1, token_map2):

@@ -7,12 +7,40 @@ class Artifact:
         self.path = path
         self.fp = None
         self.et = ET.parse(self.path)
+        #self.xml = self.parse(self.et.getroot())
         self.xml = self.sort(self.et.getroot())
         self.tokens = {}
         self.unique_tokens = None
         self.value_to_token = None
         self.cluster = None
         self.template = None
+        self.obj = None
+
+    def set_obj(self, obj):
+        self.obj = obj
+
+    def get_obj(self):
+        return self.obj
+
+    def parse(self, root):
+        root_tag = root.tag
+        root_attr = root.attrib
+        children = root.getchildren()
+
+        xml_elem = XMLElement(root_tag)
+        sorted_keys = sorted(root_attr.keys())
+        for k in sorted_keys:
+            xml_elem.add_attr(Pair(k, root_attr[k]))
+
+        if len(children) == 0:
+            return xml_elem
+
+        xml_children = []
+        for child in children:
+            xml_children.append(self.parse(child))
+
+        xml_elem.add_children(xml_children)
+        return xml_elem
 
     def get_path(self):
         return self.path
@@ -82,14 +110,9 @@ class Artifact:
     def get_cluster(self):
         return self.cluster
 
-    """
-        Returns the template by substituting the token values
-        by token names.
-    """
-    def get_template(self):
-        if self.template is not None:
-            return self.template
-        et = self.et
+    def get_unique_tokens(self):
+        if self.unique_tokens is not None:
+            return self.unique_tokens
         dup_tokens = self.get_cluster().get_duplicate_tokens()
         unique_tokens = {}
         all_tokens = self.get_tokens()
@@ -98,13 +121,26 @@ class Artifact:
             if token not in dup_tokens:
                 unique_tokens[token] = all_tokens[token]
         self.unique_tokens = unique_tokens
+        return self.unique_tokens
 
+    def get_value_to_token(self):
         value_to_token = {}
+        unique_tokens = self.get_unique_tokens()
         for token in unique_tokens:
             value_to_token[unique_tokens[token]] = token
         self.value_to_token = value_to_token
+        return value_to_token
 
+    """
+        Returns the template by substituting the token values
+        by token names.
+    """
+    def get_template(self):
+        if self.template is not None:
+            return self.template
+        et = self.et
         et = copy.deepcopy(self.et)
+        value_to_token = self.get_value_to_token()
         Util.tokenize(et.getroot(), value_to_token)
         self.template = et
         return et
