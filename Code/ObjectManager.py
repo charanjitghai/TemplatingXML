@@ -15,6 +15,8 @@ class Object:
         self.obj_name = obj_name
         self.artifacts = []
         self.all_tokens = None
+        self.unique_tokens = None
+
     def add_artifact(self, artifact):
         self.artifacts.append(artifact)
 
@@ -28,3 +30,9 @@ class Object:
         if self.all_tokens is None:
             self.all_tokens = {k:v for artifact in self.get_artifacts() for k,v in artifact.get_unique_tokens().items()}
         return self.all_tokens
+
+    def set_unique_tokens(self, unique_tokens):
+        self.unique_tokens = unique_tokens
+
+    def get_unique_tokens(self):
+        return self.unique_tokens

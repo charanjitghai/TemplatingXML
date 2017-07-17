@@ -16,6 +16,9 @@ class Artifact:
         self.template = None
         self.obj = None
 
+    def get_et(self):
+        return self.et
+
     def set_obj(self, obj):
         self.obj = obj
 
@@ -138,7 +141,6 @@ class Artifact:
     def get_template(self):
         if self.template is not None:
             return self.template
-        et = self.et
         et = copy.deepcopy(self.et)
         value_to_token = self.get_value_to_token()
         Util.tokenize(et.getroot(), value_to_token)

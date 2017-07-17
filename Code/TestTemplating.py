@@ -3,9 +3,10 @@ from Templatize import Templatize
 from Config import Config
 from ClusterManager import ClusterManager
 from ArtifactManager import Artifact
+from ObjectManager import ObjectManager
 from Util import Util
 import copy
-
+from xml.etree.ElementTree import ElementTree as ET
 
 class TestTemplating(unittest.TestCase):
 
@@ -67,7 +68,7 @@ class TestTemplating(unittest.TestCase):
                 template = cluster.get_template()
                 artifact_template_xml = copy.deepcopy(template)
                 Util.substitute(artifact_template_xml, token_map)
-                if artifact_template_xml != artifact_template_xml:
+                if artifact_template_xml != artifact_xml:
                     print pattern
                     self.assertTrue(False)
 
@@ -89,6 +90,21 @@ class TestTemplating(unittest.TestCase):
                 print pattern
                 print object
                 self.assertTrue(False)
+
+    def test_final(self):
+        templatizer = TestTemplating.templatize
+        for cur_obj_name in templatizer.get_objects():
+            cur_obj = ObjectManager.get_obj(cur_obj_name)
+            for cur_artifact in cur_obj.get_artifacts():
+                cluster = cur_artifact.get_cluster()
+                template = copy.deepcopy(cluster.get_final_template())
+                crude_xml = cur_artifact.get_et()
+                tokens = cur_obj.get_unique_tokens()
+                Util.tokenize(template.getroot(), tokens)
+                #template_elem = Util.get_element_from_xml(template)
+                self.assertTrue(Util.element_tree_comparator(crude_xml.getroot(),  template.getroot()))
+
+
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestTemplating)

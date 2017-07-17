@@ -1,4 +1,6 @@
 from Config import Config
+from xml.etree.ElementTree import Element
+
 class Util:
 
     @staticmethod
@@ -11,6 +13,31 @@ class Util:
         for child in template.get_children() or []:
             Util.substitute(child, tokens)
 
+    @staticmethod
+    def substitute_et(template, tokens):
+        token_string = Config.token_string
+        for attr in template.getattrib() or {}:
+            value = template.getattrib[attr]
+            if value.startswith(token_string) and value in tokens:
+                template.getattrib[attr] = tokens[value]
+
+        for child in template.getchildren() or []:
+            Util.substitute(child, tokens)
+
+    @staticmethod
+    def get_element_from_xml(xml_elem):
+        if xml_elem is None:
+            return None
+        root_elem = Element(xml_elem.get_tag())
+        attributes = xml_elem.get_attr()
+        for attr in attributes or []:
+            root_elem.set(attr.get_key(), attr.get_value())
+
+        for child in xml_elem.get_children() or []:
+            child_elem = Util.get_element_from_xml(child)
+            root_elem.getchildren().append(child_elem)
+
+        return root_elem
 
     @staticmethod
     def tokenize(root, value_to_token):
@@ -121,7 +148,7 @@ class tokenized_string():
         return self.string_tokens
 
     def add_string_token(self, token_string):
-        self.string_tokens.append(string)
+        self.string_tokens.append(token_string)
 
     def get_string(self):
         return "".join(self.sort_tokens())

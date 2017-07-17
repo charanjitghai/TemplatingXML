@@ -11,6 +11,13 @@ class Cluster:
         self.processed_template = None
         self.n_token = 0
         self.duplicate_tokens = None
+        self.final_template = None
+
+    def get_final_template(self):
+        return self.final_template
+
+    def set_final_template(self, final_template):
+        self.final_template = final_template
 
     def get_name(self):
         return self.name

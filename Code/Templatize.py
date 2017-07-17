@@ -3,6 +3,8 @@ from ClusterManager import ClusterManager
 from ArtifactManager import ArtifactManager
 from ObjectManager import ObjectManager
 from Config import Config
+from Util import Util
+import copy
 
 
 class Templatize:
@@ -21,7 +23,7 @@ class Templatize:
         self.obj_to_files = {}
         self.cluster_to_template = {}
         self.obj_to_tokens = {}
-        self.obj_to_templates = {}
+        self.duplicate_tokens = {}
         self.preprocess()
         self.process()
         self.shrink_tokens()
@@ -63,10 +65,12 @@ class Templatize:
 
         obj_to_all_tokens = {}
         obj_to_value_to_key = {}
+        obj_to_unique_tokens = {}
         for cur_obj in self.objects:
             self.obj_to_tokens[cur_obj] = {}
             obj_to_all_tokens[cur_obj] = ObjectManager.get_obj(cur_obj).get_all_tokens()
             obj_to_value_to_key[cur_obj] = {}
+            obj_to_unique_tokens[cur_obj] = {}
 
         ref_obj = self.objects[0]
         all_tokens_ref_obj = obj_to_all_tokens[ref_obj]
@@ -87,10 +91,31 @@ class Templatize:
             if duplicate:
                 for cur_obj in self.objects:
                     self.obj_to_tokens[cur_obj][token_name] = orig_token
+                self.duplicate_tokens[token_name] = orig_token
             else:
                 for cur_obj in self.objects:
                     all_tokens_cur_obj = obj_to_all_tokens[cur_obj]
                     self.obj_to_tokens[cur_obj][token_name] = all_tokens_cur_obj[token_name]
                     value_to_key_cur_obj = obj_to_value_to_key[cur_obj]
                     value_to_key_cur_obj[all_tokens_cur_obj[token_name]] = token_name
+                    obj_to_unique_tokens[cur_obj][token_name] = all_tokens_cur_obj[token_name]
 
+
+        for cur_obj_name in self.objects:
+            cur_obj = ObjectManager.get_obj(cur_obj_name)
+            cur_obj.set_unique_tokens(obj_to_unique_tokens[cur_obj_name])
+
+    def complete(self):
+        dup_token_rev_map = {}
+        for k,v in self.duplicate_tokens.items():
+            dup_token_rev_map[v] = k
+        for pattern in self.patterns:
+            cluster = ClusterManager.get_cluster(pattern)
+            final_cluster_template = copy.deepcopy(cluster.get_artifacts()[0].get_template())
+            Util.tokenize(final_cluster_template.getroot(), self.duplicate_tokens)
+            self.cluster_to_template[cluster.get_name()] = final_cluster_template
+            cluster.set_final_template(final_cluster_template)
+
+
+    def get_template(self, cluster_name):
+        return self.cluster_to_template[cluster_name]
