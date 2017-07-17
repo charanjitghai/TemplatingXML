@@ -60,3 +60,69 @@ class Util:
                 return False
 
         return True
+
+    """
+        this method tokenizes 2 strings i.e. will extract the common
+        part of the strings and replace the different parts with tokens
+        for example:
+            string1: OptypersdefCommonOpportunityQue
+            string2: LedpersdefCommonLeadQue
+            should return $token1$persdefCommon$token2$Que
+            
+        it's assumed that the strings won't contain character: "$"
+        
+        first version of the code will just check for common prefix and suffix.
+    """
+    @staticmethod
+    def tokenize_strings(string1, string2):
+
+        s = 0
+        while s < len(string1) and s < len(string2) and string1[s] == string2[s]:
+            s += 1
+
+        prefix = string1[:s]
+
+
+        e1 = len(string1) -1
+        e2 = len(string2) -1
+        while e1 >=0 and e2 >=0 and string1[e1] == string2[e2]:
+            e1 -= 1
+            e2 -= 1
+
+        suffix = string1[-e1]
+
+        return prefix, suffix
+
+
+
+class string_token:
+    def __init__(self, idx, value, is_token):
+        self.idx = idx
+        self.value = value
+        self.is_token = is_token
+
+    def get_value(self):
+        return self.value
+
+    def get_is_token(self):
+        return self.is_token
+
+    def get_idx(self):
+        return self.idx
+
+
+class tokenized_string():
+
+    def __init__(self):
+        self.string_tokens = []
+
+    def sort_tokens(self):
+        self.string_tokens.sort(key=lambda x: x.idx)
+        return self.string_tokens
+
+    def add_string_token(self, token_string):
+        self.string_tokens.append(string)
+
+    def get_string(self):
+        return "".join(self.sort_tokens())
+

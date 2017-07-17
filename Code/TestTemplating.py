@@ -5,13 +5,19 @@ from ClusterManager import ClusterManager
 from ArtifactManager import Artifact
 from Util import Util
 import copy
-import xml.etree.ElementTree as ET
 
 
 class TestTemplating(unittest.TestCase):
 
     pattern = 'VO.xml.xml'
-    templatize = Templatize(debug=True, objects=Config.objects, mds_path=Config.mds_path, patterns=[pattern])
+    #templatize = Templatize(debug=True, objects=['Opportunity', 'Lead', 'Note', 'Contact', 'Deal', 'BudgetFundRequest', 'SalesObjective', 'TerritoryResource', 'ActivityAssignee',
+    #                                             'BusinessPlan', 'DealProduct', 'OpportunityRevenuePartner', 'Reference', 'ServiceRequest'], mds_path=Config.mds_path, patterns=Config.patterns)
+
+    templatize = Templatize(debug=True, objects=['Opportunity', 'Lead', 'Note', 'Contact', 'Deal', 'BudgetFundRequest',
+                                                 'SalesObjective', 'TerritoryResource', 'ActivityAssignee', 'DealProduct', 'OpportunityRevenuePartner', 'Reference', 'ServiceRequest'],
+                            mds_path=Config.mds_path, patterns=Config.patterns)
+
+
 
     def test_basic_templating(self):
         for pattern in TestTemplating.templatize.get_patterns():
@@ -27,12 +33,14 @@ class TestTemplating(unittest.TestCase):
     def test_token_filter(self):
         for pattern in TestTemplating.templatize.get_patterns():
             cluster = ClusterManager.get_cluster(TestTemplating.pattern)
-            self.assertTrue(cluster.consensus(Artifact.get_duplicate_tokens, Util.token_comparator))
+            if cluster.consensus(Artifact.get_duplicate_tokens, Util.token_comparator) is False:
+                print cluster
+                self.assertTrue(False)
 
     def test_duplicate_token_filter(self):
         for pattern in TestTemplating.templatize.get_patterns():
             cluster = ClusterManager.get_cluster(pattern)
-            cluster.remove_duplicates_from_template()
+            cluster.get_processed_template()
             oppty_artifact = cluster.get_artifact_from_object(TestTemplating.templatize.get_objects()[0])
             oppty_artifact_xml = oppty_artifact.get_xml()
             token_map = oppty_artifact.get_tokens()
@@ -59,7 +67,9 @@ class TestTemplating(unittest.TestCase):
                 template = cluster.get_template()
                 artifact_template_xml = copy.deepcopy(template)
                 Util.substitute(artifact_template_xml, token_map)
-                self.assertEqual(artifact_xml, artifact_template_xml)
+                if artifact_template_xml != artifact_template_xml:
+                    print pattern
+                    self.assertTrue(False)
 
     def test_duplicate_tokens_generic(self):
         for pattern in TestTemplating.templatize.get_patterns():
@@ -74,9 +84,11 @@ class TestTemplating(unittest.TestCase):
     def test_tokenization_generic(self):
         for pattern in TestTemplating.templatize.get_patterns():
             cluster = ClusterManager.get_cluster(pattern)
-            if TestTemplating.templatize.debug:
+            consensus, object = cluster.consensus(Artifact.get_template_root, Util.element_tree_comparator)
+            if  consensus == False:
                 print pattern
-            self.assertTrue(cluster.consensus(Artifact.get_template_root, Util.element_tree_comparator))
+                print object
+                self.assertTrue(False)
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestTemplating)

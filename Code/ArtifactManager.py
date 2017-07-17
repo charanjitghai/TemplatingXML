@@ -156,6 +156,9 @@ class Artifact:
             return self.get_path() == other.get_path()
         return NotImplemented
 
+    def get_cluster_template(self):
+        return self.get_cluster().get_processed_template()
+
 
 class XMLElement:
     def __init__(self, tag, attr=None, children=None):

@@ -1,12 +1,14 @@
 from ArtifactManager import XMLElement, Pair
 from Config import Config
 from Util import Util
+import copy
 
 class Cluster:
     def __init__(self, name):
         self.name = name
         self.artifacts = []
         self.template = None
+        self.processed_template = None
         self.n_token = 0
         self.duplicate_tokens = None
 
@@ -53,8 +55,8 @@ class Cluster:
         baseline_data = method(artifacts[0])
         for artifact in artifacts[1:]:
             if not comparator(baseline_data, method(artifact)):
-                return False
-        return True
+                return False, artifact.get_path()
+        return True, None
 
     """
         This method processes the duplicate tokens of the artifacts in current cluster
@@ -89,16 +91,13 @@ class Cluster:
             self.duplicate_tokens = dup_tokens
         return self.duplicate_tokens
 
-    def remove_duplicates_from_template(self, verify_in_objects=None, verify_in_n=2):
-        Util.substitute(self.get_template(), self.get_duplicate_tokens(verify_in_objects, verify_in_n))
+    def get_processed_template(self, verify_in_objects=None, verify_in_n=2):
+        if self.processed_template is None:
+            self.processed_template = copy.deepcopy(self.get_template())
+            Util.substitute(self.processed_template, self.get_duplicate_tokens(verify_in_objects, verify_in_n))
+        return self.processed_template
 
-    """
-    def remove_duplicates_from_elem(self, duplicate_tokens):
-        attrs = self.get_attr()
-        for attr in attrs:
-            if attr.get_value() in duplicate_tokens:
-                attr.set_value(duplicate_tokens[])
-    """
+
     def process(self, xmls, artifacts):
         tag = xmls[0].get_tag()
         ans = XMLElement(tag)
@@ -116,7 +115,7 @@ class Cluster:
             for attr, c_attr in zip(attrs, c_attrs):
                 if attr.get_value() != c_attr.get_value():
                     mismatch_keys.append(attr.get_key())
-                    token = Config.token_string + str(self.n_token)
+                    token = Config.token_string + Config.token_delemiter + self.get_name() + Config.token_delemiter + str(self.n_token)
                     all_tokens.append(token)
                     self.n_token += 1
                     ans.add_attr(Pair(attr.get_key(), token))

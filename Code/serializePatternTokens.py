@@ -3,8 +3,6 @@ from Config import Config
 from Templatize import Templatize
 import sys
 import os
-import shutil
-import xml.etree.ElementTree as ET
 
 """
 cd Opportunity/ 
